@@ -1,66 +1,143 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useState, useRef, useEffect } from "react";
+import { useMessageInput } from "@/hooks/useMessageInput";
+import { useTypingResponse } from "@/hooks/useTypingResponse";
+import { useScrollStore } from "@/stores";
+import { useChatStore } from "@/stores";
+import { Plus, Mic, ArrowUp } from "lucide-react";
+import Textarea from "@/components/Textarea";
+import Button from "@/components/Button";
+import TypingLoader from "@/components/TypingLoader";
+
+const LOREM =
+  "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.";
 
 export default function Home() {
+  const [text, setText] = useState("");
+  const [isMultiLine, setIsMultiLine] = useState(false);
+  const { setScrolled } = useScrollStore();
+  const { showMic, canSend } = useMessageInput(text);
+  const {
+    chats,
+    activeChatId,
+    addMessage,
+    createChat,
+    isLoading,
+    setLoading,
+    isTypingResponse,
+  } = useChatStore();
+
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const activeChat = chats.find((c) => c.id === activeChatId);
+  const messages = activeChat?.messages ?? [];
+
+  const { start, stop } = useTypingResponse(addMessage, LOREM);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages.length, activeChatId]);
+
+  const handleSend = () => {
+    if (!text.trim()) return;
+
+    console.log(createChat());
+
+    addMessage({ id: crypto.randomUUID(), role: "user", content: text });
+    setText("");
+    setLoading(true);
+
+    setTimeout(() => {
+      start();
+      setLoading(false);
+    }, 2000);
+  };
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
+    <div className="flex flex-col h-screen">
+      <div
+        onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 10)}
+        className="flex-1 overflow-y-auto px-4 py-6 pt-20"
+      >
+        {messages.length === 0 && !isLoading && (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-2xl text-center w-11/12 text-text-default">
+              What's on your mind today?
+            </p>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-4 mx-auto">
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`px-4 py-3 rounded-2xl max-w-[80%] whitespace-pre-wrap ${
+                msg.role === "user"
+                  ? "self-end bg-bg-chat-user text-text-default"
+                  : "self-start bg-transparent text-text-default"
+              }`}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
+              {msg.content}
+            </div>
+          ))}
+
+          {isLoading && <TypingLoader />}
+          <div ref={bottomRef} />
+        </div>
+      </div>
+
+      <div className="flex justify-center">
+        <div
+          className={`flex items-end w-11/12 max-w-3xl px-2 py-1 my-3 gap-2 border border-border-secondary shadow-md ${
+            isMultiLine ? "rounded-3xl" : "rounded-full"
+          }`}
+        >
+          <Button variant="ghost" size="icon" radius="full" className="mb-1.5">
+            <Plus className="w-5 h-5" />
+          </Button>
+
+          <Textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Ask anything"
+            onLineChange={setIsMultiLine}
+          />
+
+          {showMic && (
+            <Button
+              variant="ghost"
+              size="icon"
+              radius="full"
+              className="mb-1.5"
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <Mic className="w-5 h-5" />
+            </Button>
+          )}
+
+          {isTypingResponse ? (
+            <Button
+              variant="neutral"
+              size="icon"
+              radius="full"
+              className="mb-1.5"
+              onClick={stop}
+            >
+              <div className="w-3 h-3 m-1 bg-bg-contrast rounded"></div>
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              size="icon"
+              radius="full"
+              disabled={!canSend}
+              className="mb-1.5"
+              onClick={handleSend}
+            >
+              <ArrowUp className="w-5 h-5" />
+            </Button>
+          )}
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
