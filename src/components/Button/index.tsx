@@ -1,4 +1,5 @@
 import React, { ButtonHTMLAttributes } from "react";
+import clsx from "clsx";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
@@ -20,10 +21,10 @@ export default function Button({
     "flex justify-center items-center font-light transition-all outline-none";
 
   const variants = {
-    default: "bg-bg-default text-text-default border border-border-default",
-    secondary: "bg-text-default text-text-contrast",
-    ghost: "bg-slate-50 text-text-default",
-    neutral: "bg-bg-chat-user"
+    default: "bg-surface text-primary border border-subtle",
+    secondary: "bg-surface-inverse text-inverse",
+    ghost: "bg-slate-50 text-primary",
+    neutral: "bg-surface-accent"
   };
 
   const sizes = {
@@ -46,7 +47,14 @@ export default function Button({
     <button
       onClick={props.onClick}
       disabled={disabled}
-      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${radiusStyles[radius]} ${className} ${disabled ? "opacity-50 cursor-not-allowed":""}`}
+      className={clsx(
+        baseStyles,
+        variants[variant],
+        sizes[size],
+        radiusStyles[radius],
+        disabled && "opacity-50 cursor-not-allowed",
+        className
+      )}
       {...props}
     >
       {children}

@@ -1,6 +1,12 @@
 "use client";
 
-import { forwardRef, TextareaHTMLAttributes, useRef, useImperativeHandle } from "react";
+import {
+  forwardRef,
+  TextareaHTMLAttributes,
+  useRef,
+  useImperativeHandle,
+} from "react";
+import clsx from "clsx";
 
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   maxHeight?: number;
@@ -17,14 +23,12 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
       const el = innerRef.current;
       if (!el) return;
 
-      
       el.style.height = "auto";
       el.style.height = `${Math.min(el.scrollHeight, maxHeight)}px`;
 
-      
       const computedStyle = getComputedStyle(el);
       const lineHeight = parseFloat(computedStyle.lineHeight);
-      const isMultiLine = el.scrollHeight > lineHeight + 1; 
+      const isMultiLine = el.scrollHeight > lineHeight + 1;
       if (onLineChange) onLineChange(isMultiLine);
     };
 
@@ -37,7 +41,11 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           handleInput();
           if (props.onInput) props.onInput(e);
         }}
-        className={`w-full resize-none outline-none p-3 bg-transparent max-h-[${maxHeight}px] overflow-y-auto text-base transition-all duration-300 ${className}`}
+        style={{ maxHeight }}
+        className={clsx(
+          "w-full resize-none outline-none p-3 bg-transparent overflow-y-auto text-base transition-all duration-300",
+          className
+        )}
       />
     );
   }
@@ -46,6 +54,3 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
 Textarea.displayName = "Textarea";
 
 export default Textarea;
-
-
-

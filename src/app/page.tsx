@@ -4,6 +4,7 @@ import { useMessageInput } from "@/hooks/useMessageInput";
 import { useTypingResponse } from "@/hooks/useTypingResponse";
 import { useScrollStore } from "@/stores";
 import { useChatStore } from "@/stores";
+import clsx from "clsx";
 import { Plus, Mic, ArrowUp } from "lucide-react";
 import Textarea from "@/components/Textarea";
 import Button from "@/components/Button";
@@ -41,7 +42,9 @@ export default function Home() {
   const handleSend = () => {
     if (!text.trim()) return;
 
-    console.log(createChat());
+    if (!activeChat) {
+      createChat();
+    }
 
     addMessage({ id: crypto.randomUUID(), role: "user", content: text });
     setText("");
@@ -61,7 +64,7 @@ export default function Home() {
       >
         {messages.length === 0 && !isLoading && (
           <div className="flex items-center justify-center h-full">
-            <p className="text-2xl text-center w-11/12 text-text-default">
+            <p className="text-2xl text-center w-11/12">
               What's on your mind today?
             </p>
           </div>
@@ -71,11 +74,12 @@ export default function Home() {
           {messages.map((msg) => (
             <div
               key={msg.id}
-              className={`px-4 py-3 rounded-2xl max-w-[80%] whitespace-pre-wrap ${
+              className={clsx(
+                "px-4 py-3 rounded-2xl max-w-[80%] whitespace-pre-wrap",
                 msg.role === "user"
-                  ? "self-end bg-bg-chat-user text-text-default"
-                  : "self-start bg-transparent text-text-default"
-              }`}
+                  ? "self-end bg-surface-accent"
+                  : "self-start bg-transparent"
+              )}
             >
               {msg.content}
             </div>
@@ -88,9 +92,10 @@ export default function Home() {
 
       <div className="flex justify-center">
         <div
-          className={`flex items-end w-11/12 max-w-3xl px-2 py-1 my-3 gap-2 border border-border-secondary shadow-md ${
+          className={clsx(
+            "flex items-end w-11/12 max-w-3xl px-2 py-1 my-3 gap-2 border border-strong shadow-md",
             isMultiLine ? "rounded-3xl" : "rounded-full"
-          }`}
+          )}
         >
           <Button variant="ghost" size="icon" radius="full" className="mb-1.5">
             <Plus className="w-5 h-5" />
@@ -122,7 +127,7 @@ export default function Home() {
               className="mb-1.5"
               onClick={stop}
             >
-              <div className="w-3 h-3 m-1 bg-bg-contrast rounded"></div>
+              <div className="w-3 h-3 m-1 bg-surface-inverse rounded"></div>
             </Button>
           ) : (
             <Button

@@ -5,8 +5,8 @@ export default function HamburgerMenu(
 ) {
   return (
     <div className="flex flex-col gap-2 " {...props}>
-      <span className="w-5 h-0.5 bg-bg-contrast rounded"></span>
-      <span className="w-3 h-0.5 bg-bg-contrast rounded"></span>
+      <span className="w-5 h-0.5 bg-surface-inverse rounded"></span>
+      <span className="w-3 h-0.5 bg-surface-inverse rounded"></span>
     </div>
   );
 }

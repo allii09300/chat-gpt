@@ -17,25 +17,22 @@ module.exports = {
         ],
       },
       colors: {
-        bg: {
-          default: "var(--color-bg-default)",
-          elevated: "var(--color-bg-elevated)",
-          muted: "var(--color-bg-muted)",
-          contrast: "var(--color-bg-contrast)",
-          chat: {
-            user: "var(--color-bg-user-bubble)",
-          },
+        surface: {
+          DEFAULT: "var(--color-surface)",
+          elevated: "var(--color-surface-elevated)",
+          subtle: "var(--color-surface-subtle)",
+          accent: "var(--color-surface-accent)",
+          inverse: "var(--color-surface-inverse)",
         },
-        text: {
-          default: "var(--color-text-default)",
-          secondary: "var(--color-text-secondary)",
-          muted: "var(--color-text-muted)",
-          contrast: "var(--color-text-contrast)",
-        },
-        border: {
-          default: "var(--color-border-default)",
-          secondary: "var(--color-border-secondary)",
-        },
+
+        primary: "var(--color-text-primary)",
+        secondary: "var(--color-text-secondary)",
+        muted: "var(--color-text-muted)",
+        inverse: "var(--color-text-inverse)",
+        danger: "var(--color-text-danger)",
+
+        subtle: "var(--color-border-subtle)",
+        strong: "var(--color-border-strong)",
       },
     },
   },

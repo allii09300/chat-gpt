@@ -1,4 +1,5 @@
 import { HTMLAttributes } from "react";
+import clsx from "clsx";
 
 interface MenuItemProps extends HTMLAttributes<HTMLDivElement> {
   label: string;
@@ -17,9 +18,11 @@ export default function MenuItem({
   return (
     <div
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-bg-chat-user ${
-        danger ? "text-red-500" : "text-text-default"
-      } ${className}`}
+      className={clsx(
+        "flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-surface-accent",
+        danger ? "text-danger" : "text-primary",
+        className
+      )}
     >
       {icon && <span>{icon}</span>}
       <span className="text-sm">{label}</span>
