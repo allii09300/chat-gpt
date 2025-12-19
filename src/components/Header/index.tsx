@@ -16,7 +16,7 @@ export default function Header() {
         className={clsx(
           "fixed flex items-center w-full top-0 px-3 py-2 gap-4 bg-surface border-b",
           isScrolled ? "border-subtle" : "border-transparent",
-          isOpen && "lg:pr-64"
+          isOpen && "md:pr-64"
         )}
       >
         {!isOpen && <HamburgerMenu className="ml-3" onClick={open} />}
@@ -26,11 +26,23 @@ export default function Header() {
           <ChevronDown className="w-5 h-5 text-secondary" />
         </div>
         <div className="flex items-center ml-auto">
-          <div className="flex justify-center items-center w-10 h-10 rounded-full hover:bg-surface-accent">
+          <div className="group relative flex justify-center items-center w-10 h-10 rounded-full hover:bg-surface-accent">
             <UserPlus className="w-5 h-5 text-secondary cursor-pointer" />
+            <span
+              className="absolute top-full mt-1 px-2 py-1 whitespace-nowrap rounded-md bg-surface-inverse  text-xs text-inverse font-semibold pointer-events-none
+              opacity-0 group-hover:opacity-100 "
+            >
+              Start a group chat
+            </span>
           </div>
-          <div className="flex justify-center items-center w-10 h-10 rounded-full hover:bg-surface-accent">
+          <div className="group relative flex justify-center items-center w-10 h-10 rounded-full hover:bg-surface-accent">
             <MessageCircle className="w-5 h-5 text-secondary cursor-pointer" />
+            <span
+              className="absolute top-full right-1 mt-1 px-2 py-1 whitespace-nowrap rounded-md  text-xs font-semibold text-inverse bg-surface-inverse pointer-events-none
+              opacity-0 group-hover:opacity-100"
+            >
+              Turn on temporary chat
+            </span>
           </div>
         </div>
       </header>

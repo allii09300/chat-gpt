@@ -5,7 +5,7 @@ import { useTypingResponse } from "@/hooks/useTypingResponse";
 import { useScrollStore } from "@/stores";
 import { useChatStore } from "@/stores";
 import clsx from "clsx";
-import { Plus, Mic, ArrowUp } from "lucide-react";
+import { Plus, Mic, ArrowUp, AudioLines } from "lucide-react";
 import Textarea from "@/components/Textarea";
 import Button from "@/components/Button";
 import TypingLoader from "@/components/TypingLoader";
@@ -18,7 +18,7 @@ export default function Home() {
   const [isMultiLine, setIsMultiLine] = useState(false);
 
   const { setScrolled } = useScrollStore();
-  const { showMic, canSend } = useMessageInput(text);
+  const { showMic } = useMessageInput(text);
 
   const {
     chats,
@@ -36,6 +36,8 @@ export default function Home() {
   const messages = activeChat?.messages ?? [];
 
   const { start, stop } = useTypingResponse(addMessage, LOREM);
+
+  const isEmpty = messages.length === 0 && !isLoading;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -65,13 +67,13 @@ export default function Home() {
       <div
         onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 10)}
         className={clsx(
-          "flex flex-col overflow-auto px-4 sm:px-6 md:px-8 py-6 pt-20",
+          "flex flex-col px-4 py-6 pt-20 overflow-auto sm:px-6 md:px-8",
           "flex-1",
-          messages.length === 0 && !isLoading && "lg:flex-none"
+          isEmpty && "sm:flex-none"
         )}
       >
-        {messages.length === 0 && !isLoading && (
-          <p className="w-3/4 my-auto mx-auto text-2xl text-center lg:hidden">
+        {isEmpty && (
+          <p className="w-3/4 my-auto mx-auto text-2xl text-center sm:hidden">
             What's on your mind today?
           </p>
         )}
@@ -98,32 +100,41 @@ export default function Home() {
         className={clsx(
           "flex justify-center",
           "items-end",
-          messages.length === 0 && !isLoading
-            ? "lg:flex-1 lg:items-center"
-            : "lg:items-end"
+          isEmpty ? "sm:flex-1 sm:items-center" : "sm:items-end"
         )}
       >
-        <div className="w-full flex flex-col items-center gap-6">
-          {messages.length === 0 && !isLoading && (
-            <p className="hidden lg:block text-2xl text-center">
+        <div className="flex flex-col items-center w-full gap-6">
+          {isEmpty && (
+            <p className="hidden sm:block text-2xl text-center">
               What's on your mind today?
             </p>
           )}
           <div
             className={clsx(
-              "flex items-end w-11/12 max-w-3xl  px-2 py-1 mb-3 gap-2 border border-strong shadow-md ",
+              "flex items-end w-11/12 md:w-10/12 max-w-3xl  px-2 py-1 mb-3 gap-2 border border-strong shadow-md ",
               isMultiLine ? "rounded-3xl" : "rounded-full",
-              messages.length === 0 && !isLoading ? "lg:mb-28" : "lg:mb-3"
+              isEmpty ? "sm:mb-32" : "sm:mb-0"
             )}
           >
-            <Button
-              variant="ghost"
-              size="icon"
-              radius="full"
-              className="mb-1.5 lg:bg-transparent lg:hover:bg-surface-subtle"
-            >
-              <Plus className="w-5 h-5" />
-            </Button>
+            <div className="group relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                radius="full"
+                className="mb-1.5 md:bg-transparent md:hover:bg-surface-subtle"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
+              <div
+                className="absolute flex flex-row items-center gap-2 top-full -right-16 mt-1 px-2 py-1 whitespace-nowrap rounded-md bg-surface-inverse  text-xs text-inverse font-semibold pointer-events-none
+                opacity-0 group-hover:opacity-100"
+              >
+                Add files and more
+                <span className="flex justify-center items-center w-4 h-4 rounded-md text-[12px] bg-slate-700 text-muted">
+                  /
+                </span>
+              </div>
+            </div>
 
             <Textarea
               value={text}
@@ -132,18 +143,26 @@ export default function Home() {
               onLineChange={setIsMultiLine}
             />
 
-            <Button
-              variant="ghost"
-              size="icon"
-              radius="full"
-              className={clsx(
-                "mb-1.5 lg:bg-transparent lg:hover:bg-surface-subtle",
-                !showMic && "hidden",
-                "lg:flex"
-              )}
-            >
-              <Mic className="w-5 h-5 " />
-            </Button>
+            <div className="group relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                radius="full"
+                className={clsx(
+                  "mb-1.5 md:bg-transparent md:hover:bg-surface-subtle",
+                  !showMic && "hidden",
+                  "sm:flex"
+                )}
+              >
+                <Mic className="w-5 h-5 " />
+              </Button>
+              <span
+                className="absolute top-full -right-3 mt-1 px-2 py-1 whitespace-nowrap rounded-md bg-surface-inverse  text-xs text-inverse font-semibold pointer-events-none
+                  opacity-0 group-hover:opacity-100 "
+              >
+                Dictate
+              </span>
+            </div>
 
             {isTypingResponse ? (
               <Button
@@ -155,18 +174,49 @@ export default function Home() {
               >
                 <div className="w-3 h-3 m-1 bg-surface-inverse rounded" />
               </Button>
+            ) : text.trim() === "" ? (
+              <div className="relative group">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  radius="full"
+                  className="mb-1.5 opacity-100 hover:opacity-80"
+                  onClick={handleSend}
+                >
+                  <AudioLines className="w-5 h-5" />
+                </Button>
+                <span
+                  className="absolute top-full -right-10 mt-1 px-2 py-1 whitespace-nowrap rounded-md bg-surface-inverse  text-xs text-inverse font-semibold pointer-events-none
+                  opacity-0 group-hover:opacity-100 "
+                >
+                  Use voice mode
+                </span>
+              </div>
             ) : (
               <Button
                 variant="secondary"
                 size="icon"
                 radius="full"
-                disabled={!canSend}
-                className="mb-1.5"
+                className="mb-1.5 opacity-100 hover:opacity-80"
                 onClick={handleSend}
               >
                 <ArrowUp className="w-5 h-5" />
               </Button>
             )}
+          </div>
+          <div
+            className={clsx(
+              "hidden text-center -translate-y-3 w-3/4",
+              "sm:flex",
+              isEmpty && "sm:hidden"
+            )}
+          >
+            <p className=" mx-auto text-[0.75rem] font-light">
+              ChatGPT can make mistakes. Check important info. see{" "}
+              <span className="underline cursor-pointer">
+                Cookie preferences.
+              </span>
+            </p>
           </div>
         </div>
       </div>

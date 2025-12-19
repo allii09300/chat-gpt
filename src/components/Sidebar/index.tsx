@@ -30,9 +30,17 @@ export default function Sidebar() {
   const menuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
-    if (window.innerWidth >= 1024) {
-      open();
-    }
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        open();
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -89,12 +97,13 @@ export default function Sidebar() {
   return (
     <aside
       className={clsx(
-        "fixed flex flex-col gap-5 pt-4 px-1 lg:static top-0 left-0 h-full bg-surface-elevated z-50",
+        "flex flex-col gap-5 pt-4 px-1 top-0 left-0 h-full bg-surface-elevated z-50",
         "transition-all duration-300",
+        "fixed md:static",
         [
           isOpen && "w-64 translate-x-0 shadow-2xl",
           !isOpen && "w-0 -translate-x-full",
-          "lg:w-60 lg:translate-x-0 lg:shadow-none",
+          "md:w-60 md:translate-x-0 md:shadow-none",
         ]
       )}
     >
@@ -105,8 +114,14 @@ export default function Sidebar() {
             className="w-6 h-6 text-primary cursor-pointer"
           />
         </div>
-        <div className="flex justify-center items-center w-9 h-9 mr-1 rounded-lg hover:bg-surface-accent">
+        <div className="group relative flex justify-center items-center w-9 h-9 mr-1 rounded-lg hover:bg-surface-accent">
           <X onClick={close} className="w-5 h-5 text-primary cursor-pointer" />
+          <span
+            className="absolute top-full -right-8 mt-1 px-2 py-1 whitespace-nowrap rounded-md bg-surface-inverse  text-xs text-inverse font-semibold pointer-events-none
+                  opacity-0 group-hover:opacity-100 "
+          >
+            Close sidebar
+          </span>
         </div>
       </div>
 
@@ -123,13 +138,13 @@ export default function Sidebar() {
             >
               <div className="flex items-center gap-2">
                 <Icon className="w-5 h-5" />
-                <p className="text-base font-light lg:text-sm">{item.label}</p>
+                <p className="text-base font-light md:text-sm">{item.label}</p>
               </div>
 
               {item.shortcut && (
                 <span
                   className="
-                   hidden lg:flex
+                   hidden md:flex
                    opacity-0 group-hover:opacity-100
                    text-sm font-mono text-secondary"
                 >
@@ -142,7 +157,7 @@ export default function Sidebar() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <p className="text-secondary font-light px-3 lg:text-sm">Your chats</p>
+        <p className="text-secondary font-light px-3 md:text-sm">Your chats</p>
         <div>
           {chats.map((chat) => (
             <div
@@ -161,7 +176,7 @@ export default function Sidebar() {
                   e.stopPropagation();
                   setOpenMenuId(chat.id);
                 }}
-                className="w-4 h-4 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
+                className="w-4 h-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity"
               />
               {openMenuId === chat.id && (
                 <div
@@ -200,11 +215,7 @@ export default function Sidebar() {
               <p className="text-sm font-light text-secondary">Free</p>
             </div>
           </div>
-          <Button
-            className="hover:bg-surface-subtle"
-            size="sm"
-            radius="full"
-          >
+          <Button className="hover:bg-surface-subtle" size="sm" radius="full">
             Upgrade
           </Button>
         </div>
