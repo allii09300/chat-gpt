@@ -161,7 +161,7 @@ export default function Home() {
                 size="icon"
                 radius="full"
                 disabled={!canSend}
-                className="mb-1.5 lg:opacity-50 lg:hover:opacity-100"
+                className="mb-1.5"
                 onClick={handleSend}
               >
                 <ArrowUp className="w-5 h-5" />
