@@ -7,25 +7,31 @@ import { ChevronDown, UserPlus, MessageCircle } from "lucide-react";
 import HamburgerMenu from "../HamburgerMenu";
 
 export default function Header() {
-  const { open } = useSidebarStore();
+  const { open, isOpen } = useSidebarStore();
   const { isScrolled } = useScrollStore();
 
   return (
     <div>
       <header
         className={clsx(
-          "fixed flex items-center w-full top-0 px-6 py-4 gap-5 bg-surface border-b transition-all duration-300",
-          isScrolled ? "border-strong" : "border-transparent"
+          "fixed flex items-center w-full top-0 px-3 py-2 gap-4 bg-surface border-b",
+          isScrolled ? "border-subtle" : "border-transparent",
+          isOpen && "lg:pr-64"
         )}
       >
-        <HamburgerMenu onClick={open} />
-        <div className="flex items-center">
+        {!isOpen && <HamburgerMenu className="ml-3" onClick={open} />}
+
+        <div className="flex items-center px-2 py-2 cursor-pointer rounded-lg hover:bg-surface-accent lg:ml-2">
           <p className="text-xl font-light">ChatGPT</p>
           <ChevronDown className="w-5 h-5 text-secondary" />
         </div>
-        <div className="flex items-center gap-5 ml-auto">
-          <UserPlus className="w-5 h-5 text-secondary" />
-          <MessageCircle className="w-5 h-5 text-secondary" />
+        <div className="flex items-center ml-auto">
+          <div className="flex justify-center items-center w-10 h-10 rounded-full hover:bg-surface-accent">
+            <UserPlus className="w-5 h-5 text-secondary cursor-pointer" />
+          </div>
+          <div className="flex justify-center items-center w-10 h-10 rounded-full hover:bg-surface-accent">
+            <MessageCircle className="w-5 h-5 text-secondary cursor-pointer" />
+          </div>
         </div>
       </header>
     </div>

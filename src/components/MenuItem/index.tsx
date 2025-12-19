@@ -19,7 +19,7 @@ export default function MenuItem({
     <div
       onClick={onClick}
       className={clsx(
-        "flex items-center gap-2 px-4 py-2 cursor-pointer hover:bg-surface-accent",
+        "flex items-center gap-2 px-4 py-2 cursor-pointer rounded hover:bg-surface-accent",
         danger ? "text-danger" : "text-primary",
         className
       )}

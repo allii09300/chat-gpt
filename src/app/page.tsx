@@ -16,8 +16,10 @@ const LOREM =
 export default function Home() {
   const [text, setText] = useState("");
   const [isMultiLine, setIsMultiLine] = useState(false);
+
   const { setScrolled } = useScrollStore();
   const { showMic, canSend } = useMessageInput(text);
+
   const {
     chats,
     activeChatId,
@@ -41,12 +43,14 @@ export default function Home() {
 
   const handleSend = () => {
     if (!text.trim()) return;
+    if (!activeChat) createChat();
 
-    if (!activeChat) {
-      createChat();
-    }
+    addMessage({
+      id: crypto.randomUUID(),
+      role: "user",
+      content: text,
+    });
 
-    addMessage({ id: crypto.randomUUID(), role: "user", content: text });
     setText("");
     setLoading(true);
 
@@ -60,22 +64,23 @@ export default function Home() {
     <div className="flex flex-col h-screen">
       <div
         onScroll={(e) => setScrolled(e.currentTarget.scrollTop > 10)}
-        className="flex-1 overflow-y-auto px-4 py-6 pt-20"
+        className={clsx(
+          "flex flex-col overflow-auto px-4 sm:px-6 md:px-8 py-6 pt-20",
+          "flex-1",
+          messages.length === 0 && !isLoading && "lg:flex-none"
+        )}
       >
         {messages.length === 0 && !isLoading && (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-2xl text-center w-11/12">
-              What's on your mind today?
-            </p>
-          </div>
+          <p className="w-3/4 my-auto mx-auto text-2xl text-center lg:hidden">
+            What's on your mind today?
+          </p>
         )}
-
-        <div className="flex flex-col gap-4 mx-auto">
+        <div className="flex flex-col w-11/12 max-w-2xl mx-auto gap-4">
           {messages.map((msg) => (
             <div
               key={msg.id}
               className={clsx(
-                "px-4 py-3 rounded-2xl max-w-[80%] whitespace-pre-wrap",
+                "px-4 py-3 rounded-2xl max-w-[80%] whitespace-pre-wrap break-words",
                 msg.role === "user"
                   ? "self-end bg-surface-accent"
                   : "self-start bg-transparent"
@@ -89,58 +94,80 @@ export default function Home() {
           <div ref={bottomRef} />
         </div>
       </div>
-
-      <div className="flex justify-center">
-        <div
-          className={clsx(
-            "flex items-end w-11/12 max-w-3xl px-2 py-1 my-3 gap-2 border border-strong shadow-md",
-            isMultiLine ? "rounded-3xl" : "rounded-full"
+      <div
+        className={clsx(
+          "flex justify-center",
+          "items-end",
+          messages.length === 0 && !isLoading
+            ? "lg:flex-1 lg:items-center"
+            : "lg:items-end"
+        )}
+      >
+        <div className="w-full flex flex-col items-center gap-6">
+          {messages.length === 0 && !isLoading && (
+            <p className="hidden lg:block text-2xl text-center">
+              What's on your mind today?
+            </p>
           )}
-        >
-          <Button variant="ghost" size="icon" radius="full" className="mb-1.5">
-            <Plus className="w-5 h-5" />
-          </Button>
-
-          <Textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Ask anything"
-            onLineChange={setIsMultiLine}
-          />
-
-          {showMic && (
+          <div
+            className={clsx(
+              "flex items-end w-11/12 max-w-2xl  px-2 py-1 mb-3 gap-2 border border-strong shadow-md ",
+              isMultiLine ? "rounded-3xl" : "rounded-full",
+              messages.length === 0 && !isLoading ? "lg:mb-28" : "lg:mb-3"
+            )}
+          >
             <Button
               variant="ghost"
               size="icon"
               radius="full"
-              className="mb-1.5"
+              className="mb-1.5 lg:bg-transparent lg:hover:bg-surface-subtle"
             >
-              <Mic className="w-5 h-5" />
+              <Plus className="w-5 h-5" />
             </Button>
-          )}
 
-          {isTypingResponse ? (
+            <Textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Ask anything"
+              onLineChange={setIsMultiLine}
+            />
+
             <Button
-              variant="neutral"
+              variant="ghost"
               size="icon"
               radius="full"
-              className="mb-1.5"
-              onClick={stop}
+              className={clsx(
+                "mb-1.5 lg:bg-transparent lg:hover:bg-surface-subtle",
+                !showMic && "hidden",
+                "lg:flex"
+              )}
             >
-              <div className="w-3 h-3 m-1 bg-surface-inverse rounded"></div>
+              <Mic className="w-5 h-5 " />
             </Button>
-          ) : (
-            <Button
-              variant="secondary"
-              size="icon"
-              radius="full"
-              disabled={!canSend}
-              className="mb-1.5"
-              onClick={handleSend}
-            >
-              <ArrowUp className="w-5 h-5" />
-            </Button>
-          )}
+
+            {isTypingResponse ? (
+              <Button
+                variant="neutral"
+                size="icon"
+                radius="full"
+                className="mb-1.5"
+                onClick={stop}
+              >
+                <div className="w-3 h-3 m-1 bg-surface-inverse rounded" />
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                size="icon"
+                radius="full"
+                disabled={!canSend}
+                className="mb-1.5 lg:opacity-50 lg:hover:opacity-100"
+                onClick={handleSend}
+              >
+                <ArrowUp className="w-5 h-5" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>

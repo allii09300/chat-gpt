@@ -43,7 +43,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         }}
         style={{ maxHeight }}
         className={clsx(
-          "w-full resize-none outline-none p-3 bg-transparent overflow-y-auto text-base transition-all duration-300",
+          "w-full resize-none outline-none py-3 bg-transparent overflow-y-auto text-base transition-all duration-300",
           className
         )}
       />
