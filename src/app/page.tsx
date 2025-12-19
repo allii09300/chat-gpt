@@ -75,7 +75,7 @@ export default function Home() {
             What's on your mind today?
           </p>
         )}
-        <div className="flex flex-col w-11/12 max-w-2xl mx-auto gap-4">
+        <div className="flex flex-col w-11/12 max-w-3xl mx-auto gap-4">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -111,7 +111,7 @@ export default function Home() {
           )}
           <div
             className={clsx(
-              "flex items-end w-11/12 max-w-2xl  px-2 py-1 mb-3 gap-2 border border-strong shadow-md ",
+              "flex items-end w-11/12 max-w-3xl  px-2 py-1 mb-3 gap-2 border border-strong shadow-md ",
               isMultiLine ? "rounded-3xl" : "rounded-full",
               messages.length === 0 && !isLoading ? "lg:mb-28" : "lg:mb-3"
             )}
